@@ -18,3 +18,15 @@ void send_tx(char c){
   while ((UCSR0A & (1 << UDRE0)) == 0);
   UDR0 = c;
 }
+
+void sprint(char* str) {
+  unsigned char i;
+  for (i = 0; i < (unsigned) strlen(str); ++i) {
+    send_tx(str[i]);
+  }
+}
+
+void sprintln(char* str) {
+  sprint(str);
+  send_tx('\n');
+}

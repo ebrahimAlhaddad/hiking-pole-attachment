@@ -15,7 +15,7 @@ int main(void) {
   serial_init();
 
   while (1) {
-    char input = receive_rx();
-    send_tx(input);
+    sprintln("Hello World");
+    _delay_ms(1000);
   }
 }
