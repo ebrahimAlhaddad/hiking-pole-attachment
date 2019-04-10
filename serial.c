@@ -28,5 +28,6 @@ void sprint(char* str) {
 
 void sprintln(char* str) {
   sprint(str);
+  send_tx('\r');
   send_tx('\n');
 }
