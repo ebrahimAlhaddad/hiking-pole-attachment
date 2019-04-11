@@ -6,8 +6,7 @@
 #define SCK_PIN   PB5
 #define MISO_PIN  PB4
 #define MOSI_PIN  PB3
-
-#define SPI_PORTB     0x38 // (Port B: 3-5)
+#define SS_PIN    PB2
 
 void spi_init(void);
 

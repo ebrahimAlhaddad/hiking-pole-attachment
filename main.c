@@ -13,21 +13,18 @@ void init_memory() {
 }
 
 int main(void) {
-  init_ports();
-  init_memory();
-
   serial_init();
-  sprintln("Serial Initialized!");
   spi_init();
-  sprintln("SPI Initialized!");
   lcd_init();
-  sprintln("LCD Initialized!");
 
   while (1) {
+    lcd_set_addr_window(0, 0, LCD_Width - 1, LCD_Height - 1);
+
     LCD_CS_Active;
 
     LCD_DC_Command;
     lcd_write_byte(ILI9341_MEMORYWRITE);
+    sprintln("Memory Write");
 
     LCD_DC_Data;
     uint8_t hi, lo;
@@ -43,7 +40,8 @@ int main(void) {
     }
 
     LCD_CS_Negate;
-    // sprintln("Hello World");
-    // _delay_ms(1000);
   }
 }
+
+// sprintln("Hello World");
+// _delay_ms(1000);

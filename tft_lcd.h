@@ -12,8 +12,8 @@
 #define LCD_PORTB  (1 << DC_PIN) | (1 << CS_PIN)
 
 // LCD Macros
-#define LCD_DC_Command   PORTB |= (1 << DC_PIN)
-#define LCD_DC_Data      PORTB &= ~(1 << DC_PIN)
+#define LCD_DC_Data      PORTB |= (1 << DC_PIN)
+#define LCD_DC_Command   PORTB &= ~(1 << DC_PIN)
 #define LCD_CS_Active    PORTB |= (1 << CS_PIN)
 #define LCD_CS_Negate    PORTB &= ~(1 << CS_PIN)
 
@@ -74,5 +74,7 @@ void lcd_init(void);
 void lcd_write_byte(uint8_t byte);
 void lcd_reg_write8(uint8_t addr, uint8_t data);
 void lcd_reg_write16(uint8_t addr, uint16_t data);
+void lcd_reg_write32(uint8_t addr, uint32_t data);
+void lcd_set_addr_window(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 
 #endif
