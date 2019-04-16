@@ -17,29 +17,11 @@ int main(void) {
   spi_init();
   lcd_init();
 
+  fill(LCD_OLIVE);
+  draw_line(20, 50, 70, 60, LCD_RED);
+
   while (1) {
-    lcd_set_addr_window(0, 0, LCD_Width - 1, LCD_Height - 1);
 
-    LCD_CS_Active;
-
-    LCD_DC_Command;
-    lcd_write_byte(ILI9341_MEMORYWRITE);
-    sprintln("Memory Write");
-
-    LCD_DC_Data;
-    uint8_t hi, lo;
-    hi = LCD_RED >> 8;
-    lo = LCD_RED & 0xff;
-
-    int r, c;
-    for (r = 0; r < LCD_Width; ++r) {
-      for (c = 0; c < LCD_Height; ++c) {
-        lcd_write_byte(hi);
-        lcd_write_byte(lo);
-      }
-    }
-
-    LCD_CS_Negate;
   }
 }
 
