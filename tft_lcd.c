@@ -5,7 +5,9 @@
 #include "tft_lcd.h"
 #include "spi.h"
 #include "serial.h"
+
 #include "font_bitmap.h"
+#include "icon_bitmap.h"
 
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -365,7 +367,7 @@ void fill_circle_helper(int16_t x0, int16_t y0, int16_t r,
 }
 
 /*
-  Writes a 12x16 character (0x2E - 0x5F or . - _) using the font bitmap at (x, y)
+  Writes a 12x16 character (0x2E - 0x5F or '.' - '_') using the font bitmap at (x, y)
 */
 void draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t size) {
   if (c < 0x2E || c > 0x5F) {
@@ -390,12 +392,12 @@ void draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t size) {
   //     }
   //   }
   // }
-  sprintln(" ");
+
   for (i = 0; i < 8; i++) {
     // Read 3 entries at a time (2 lines)
     // Format:
-    // aab
-    // bcc
+    // Line 1: aab
+    // Line 2: bcc
     uint8_t a = char_bitmap[3*i];
     uint8_t b = char_bitmap[3*i + 1];
     uint8_t c = char_bitmap[3*i + 2];
@@ -412,32 +414,42 @@ void draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t size) {
         fill_rect(x + (11 - j)*size, y + (2*i + 1)*size, size, size, color);
       }
     }
-
-    // for (j = 0; j < 12; j++, line1 >>= 1) {
-    //   if (line1 & 0x1) {
-    //     sprint("#");
-    //   } else {
-    //     sprint(" ");
-    //   }
-    // }
-    // sprintln(" ");
-    //
-    // for (j = 0; j < 12; j++, line2 >>= 1) {
-    //   if (line2 & 0x1) {
-    //     sprint("#");
-    //   } else {
-    //     sprint(" ");
-    //   }
-    // }
-    // sprintln(" ");
-
-
-    // uint16_t line = ((uint16_t)char_bitmap[2*i] << 8) | ((uint16_t) char_bitmap[2*i + 1]); // Each element represents half a line
-    // char str[10];
-    // sprintf(str, "%04x", line);
-    // sprintln(str);
-    //
-
-    // sprintln(" ");
   }
+}
+
+void draw_text(uint16_t x, uint16_t y, char* str, uint16_t color, uint8_t size) {
+  uint16_t letter_spacing = 5;
+
+  unsigned char i;
+  for (i = 0; i < (unsigned) strlen(str); ++i) {
+    draw_char(x + i*size*TEXT_WIDTH + letter_spacing, y, str[i], color, size);
+  }
+}
+
+/*
+  Draw 32x32 icon at (x, y) specified by the icon bitmap 'icon'
+*/
+void draw_icon(uint16_t x, uint16_t y, uint8_t icon[32][4], uint16_t color, uint8_t size) {
+  uint16_t i, j, k;
+  for (i = 0; i < 32; ++i) {
+    // Create 32-bit line
+    uint32_t line = 0;
+    for (j = 0; j < 4; ++j) {
+      line |= (uint32_t) icon[i][j] << (8 * (3 - j));
+    }
+
+    for (k = 0; k < 32; ++k, line >>= 1) {
+      if (line & 0x01) {
+        fill_rect(x + (31 - k)*size, y + i*size, size, size, color);
+      }
+    }
+  }
+}
+
+void draw_exclaim(uint16_t x, uint16_t y, uint16_t color, uint8_t size) {
+  draw_icon(x, y, exclaim_icon, color, size);
+}
+
+void draw_heart(uint16_t x, uint16_t y, uint16_t color, uint8_t size) {
+  draw_icon(x, y, heart_icon, color, size);
 }

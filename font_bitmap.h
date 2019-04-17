@@ -1,6 +1,7 @@
 /*
  12x16 Character Size (ASCII)
  Dimensions: 50x24 (ASCII Characters x 24 8-Bit Lines - 2 entries per line)
+ Taken from: http://www.piclist.com/tecHREF/datafile/charset/extractor/charset_extractor.htm
 */
 
 const uint8_t font[50][24] = {
