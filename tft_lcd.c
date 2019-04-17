@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 #include "tft_lcd.h"
+#include "spi.h"
 #include "serial.h"
+#include "font_bitmap.h"
 
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -193,14 +195,14 @@ void lcd_set_addr_window(uint16_t x, uint16_t y, uint16_t width, uint16_t height
   fill - Fills the screen with "color"
 */
 void fill(uint16_t color) {
-  draw_box(0, 0, LCD_Width, LCD_Height, color);
+  fill_rect(0, 0, LCD_Width, LCD_Height, color);
 }
 
 /*
-  draw_box - Draw a box from (x, y), upper-left, to (x + width, y + height), lower-right
+  fill_rect - Draw a box from (x, y), upper-left, to (x + width, y + height), lower-right
   and fill it with the 16-bit color value in "color"
 */
-void draw_box(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+void fill_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
   lcd_set_addr_window(x, y, width, height);
 
   LCD_CS_Active;
@@ -225,7 +227,7 @@ void draw_box(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t 
 
 
 void draw_pixel(uint16_t x, uint16_t y, uint16_t color) {
-  draw_box(x, y, 1, 1, color);
+  fill_rect(x, y, 1, 1, color);
 }
 
 void draw_line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
@@ -272,8 +274,18 @@ void draw_vert_line(int16_t x0, int16_t y0, int16_t height, int16_t color) {
   draw_line(x0, y0, x0, y0 + height - 1, color);
 }
 
+void draw_horiz_line(int16_t x0, int16_t y0, int16_t width, int16_t color) {
+  draw_line(x0, y0, x0 + width - 1, y0, color);
+}
+
+void draw_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+  draw_vert_line(x, y, height, color);
+  draw_horiz_line(x, y, width, color);
+  draw_vert_line(x + width - 1, y, height, color);
+  draw_horiz_line(x, y + height - 1, width, color);
+}
+
 void draw_circle(int16_t x0, int16_t y0, int16_t r, int16_t color) {
-  // === Taken from https://github.com/adafruit/Adafruit-GFX-Library ===
   int16_t f = 1 - r;
   int16_t ddF_x = 1;
   int16_t ddF_y = -2 * r;
@@ -308,15 +320,17 @@ void draw_circle(int16_t x0, int16_t y0, int16_t r, int16_t color) {
   }
 }
 
-void fill_circle(int16_t x0, int16_t y0, int16_t r, uint16_t color) {
+void fill_circle(int16_t x0, int16_t y0, int16_t r,
+    uint16_t color) {
   draw_vert_line(x0, y0-r, 2*r + 1, color);
-  fill_circle_helper(x0, y0, r, 0b11, 0, color);
+  fill_circle_helper(x0, y0, r, 0b11, color);
 }
 
 /*
-* corners is a mask that indicates which quarters to fill
+  corners is a mask that indicates which quarters to fill
 */
-void fill_circle_helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, uint16_t color) {
+void fill_circle_helper(int16_t x0, int16_t y0, int16_t r,
+    uint8_t corners, uint16_t color) {
   int16_t f = 1 - r;
   int16_t ddF_x = 1;
   int16_t ddF_y = -2 * r;
@@ -337,15 +351,93 @@ void fill_circle_helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, uint
     f += ddF_x;
 
     if (x < (y + 1)) {
-      if (corners & 0b01) draw_vert_line(x0 + x, y0 + y, 2*y, color);
-      if (corners & 0b11) draw_vert_line(x0 - x, y0 - y, 2*y, color);
+      if (corners & 0b01) draw_vert_line(x0 + x, y0 - y, 2*y+1, color);
+      if (corners & 0b10) draw_vert_line(x0 - x, y0 - y, 2*y+1, color);
     }
 
     if (y != py) {
-      if (corners & 0b01) draw_vert_line(x0 + py, y0 + px, 2*x, color);
-      if (corners & 0b11) draw_vert_line(x0 - py, y0 - px, 2*x, color);
+      if (corners & 0b01) draw_vert_line(x0 + py, y0 - px, 2*px+1, color);
+      if (corners & 0b10) draw_vert_line(x0 - py, y0 - px, 2*px+1, color);
       py = y;
     }
     px = x;
+  }
+}
+
+/*
+  Writes a 12x16 character (0x2E - 0x5F or . - _) using the font bitmap at (x, y)
+*/
+void draw_char(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t size) {
+  if (c < 0x2E || c > 0x5F) {
+    // Out of charset range
+    return;
+  }
+
+  const uint8_t *char_bitmap = font[c - 0x2E];
+  uint16_t i = 0, j;
+  // From the LSB, read 6 bits at a time
+  // for (i = 0; i < 4; ++i) { // 4 int16's per line
+  //   uint16_t entry = char_bitmap[i]; // Each element represents 2 lines
+  //   uint8_t line1 = (entry >> 6) & 0xF;
+  //   uint8_t line2 = entry & 0xF;
+  //
+  //   for (j = 0; j < 6; ++j, line1 >>= 1, line2 >>= 1) {
+  //     if (line1 & 0x1) {
+  //       fill_rect(x + j*size, y + (2*i)*size, size, size, color);
+  //     }
+  //     if (line2 & 0x1) {
+  //       fill_rect(x + j*size, y + (2*i + 1)*size, size, size, color);
+  //     }
+  //   }
+  // }
+  sprintln(" ");
+  for (i = 0; i < 8; i++) {
+    // Read 3 entries at a time (2 lines)
+    // Format:
+    // aab
+    // bcc
+    uint8_t a = char_bitmap[3*i];
+    uint8_t b = char_bitmap[3*i + 1];
+    uint8_t c = char_bitmap[3*i + 2];
+
+    uint16_t line1, line2; // 12 bit lines
+    line1 = ((uint16_t)a << 4) | (b >> 4);
+    line2 = ((uint16_t)(b & 0x0F) << 8) | ((uint16_t)c);
+
+    for (j = 0; j < 12; j++, line1 >>= 1, line2 >>= 1) {
+      if (line1 & 0x1) {
+        fill_rect(x + (11 - j)*size, y + (2*i)*size, size, size, color);
+      }
+      if (line2 & 0x1) {
+        fill_rect(x + (11 - j)*size, y + (2*i + 1)*size, size, size, color);
+      }
+    }
+
+    // for (j = 0; j < 12; j++, line1 >>= 1) {
+    //   if (line1 & 0x1) {
+    //     sprint("#");
+    //   } else {
+    //     sprint(" ");
+    //   }
+    // }
+    // sprintln(" ");
+    //
+    // for (j = 0; j < 12; j++, line2 >>= 1) {
+    //   if (line2 & 0x1) {
+    //     sprint("#");
+    //   } else {
+    //     sprint(" ");
+    //   }
+    // }
+    // sprintln(" ");
+
+
+    // uint16_t line = ((uint16_t)char_bitmap[2*i] << 8) | ((uint16_t) char_bitmap[2*i + 1]); // Each element represents half a line
+    // char str[10];
+    // sprintf(str, "%04x", line);
+    // sprintln(str);
+    //
+
+    // sprintln(" ");
   }
 }

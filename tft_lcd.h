@@ -81,12 +81,14 @@ void lcd_set_addr_window(uint16_t x, uint16_t y, uint16_t width, uint16_t height
 
 // GFX
 void fill(uint16_t color);
-void draw_box(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+void fill_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 void draw_pixel(uint16_t x, uint16_t y, uint16_t color);
 void draw_line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
 void draw_vert_line(int16_t x0, int16_t y0, int16_t height, int16_t color);
+void draw_horiz_line(int16_t x0, int16_t y0, int16_t width, int16_t color);
+void draw_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 void draw_circle(int16_t x0, int16_t y0, int16_t radius, int16_t color);
 void fill_circle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
 void fill_circle_helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, uint16_t color);
-
+void draw_char(uint16_t x0, uint16_t y0, char c, uint16_t color, uint8_t size);
 #endif

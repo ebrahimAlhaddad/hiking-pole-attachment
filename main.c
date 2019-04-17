@@ -18,10 +18,21 @@ int main(void) {
   lcd_init();
 
   fill(LCD_OLIVE);
-  draw_line(20, 50, 70, 60, LCD_RED);
+  _delay_ms(2);
+  // draw_line(20, 50, 70, 60, LCD_RED);
+  // fill_circle(100, 100, 50, LCD_CYAN);
+  // draw_char(100, 100, 'A', LCD_RED, 3);
 
+  uint8_t t = 'A';
   while (1) {
+    fill_rect(100, 100, 12*4, 16*4, LCD_CYAN);
+    draw_char(100, 100, t, LCD_RED, 4);
+    t += 1;
+    if (t > 0x5F) {
+      t = 'A';
+    }
 
+    _delay_ms(1000);
   }
 }
 
