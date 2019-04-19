@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = main.o serial.o spi.o tft_lcd.o i2c.o touch.o
+OBJECTS    = main.o serial.o spi.o tft_lcd.o i2c.o touch.o gui.o
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 
 # Fuse Low Byte = 0xe0   Fuse High Byte = 0xd9   Fuse Extended Byte = 0xff
@@ -34,6 +34,8 @@ spi.o: spi.c spi.h
 i2c.o: i2c.c i2c.h
 tft_lcd.o: tft_lcd.c tft_lcd.h
 touch.o: touch.c touch.h
+gui.o: gui.c gui.h
+
 
 .c.o:
 	$(COMPILE) -c $< -o $@

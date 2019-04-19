@@ -89,6 +89,8 @@ void lcd_init(void) {
   _delay_ms(150);
   lcd_reg_write8(ILI9341_DISPLAYON, 0x0);
   _delay_ms(500);
+
+  lcd_set_rotation(3);
 }
 
 /*
@@ -99,6 +101,14 @@ void lcd_reset() {
   _delay_ms(1);
   PORTB |= (1 << RST_PIN);
   _delay_ms(200);
+}
+
+uint16_t lcd_width(void) {
+  return _width;
+}
+
+uint16_t lcd_height(void) {
+  return _height;
 }
 
 /*
@@ -171,14 +181,14 @@ void lcd_set_addr_window(uint16_t x, uint16_t y, uint16_t width, uint16_t height
   if (x < 0) {
     x = 0;
   }
-  if (x2 >= LCD_Width) {
-    x2 = LCD_Width - 1;
+  if (x2 >= _width) {
+    x2 = _width - 1;
   }
   if (y < 0) {
     y = 0;
   }
-  if (y2 >= LCD_Height) {
-    y2 = LCD_Height - 1;
+  if (y2 >= _height) {
+    y2 = _height - 1;
   }
 
   uint32_t w;
@@ -194,10 +204,47 @@ void lcd_set_addr_window(uint16_t x, uint16_t y, uint16_t width, uint16_t height
 }
 
 /*
+  Set origin of (0,0) and orientation of TFT display
+  'rotation' is between 0-3 inclusive
+*/
+void lcd_set_rotation(uint8_t rotation) {
+  rotation %= 4;
+  uint8_t lcd_rot_data;
+  switch (rotation) {
+    case 0:
+      // Portrait
+      lcd_rot_data = (ILI9341_MADCTL_MX | ILI9341_MADCTL_BGR);
+      _width = LCD_Width;
+      _height = LCD_Height;
+      break;
+    case 1:
+      // Landscape
+      lcd_rot_data = (ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR);
+      _width = LCD_Height;
+      _height = LCD_Width;
+      break;
+    case 2:
+      // Portrait Reversed
+      lcd_rot_data = (ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR);
+      _width = LCD_Width;
+      _height = LCD_Height;
+      break;
+    case 3:
+      // Landscape Reversed
+      lcd_rot_data = (ILI9341_MADCTL_MX | ILI9341_MADCTL_MY | ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR);
+      _width = LCD_Height;
+      _height = LCD_Width;
+      break;
+  }
+
+  lcd_reg_write8(ILI9341_MEMCONTROL, lcd_rot_data);
+}
+
+/*
   fill - Fills the screen with "color"
 */
 void fill(uint16_t color) {
-  fill_rect(0, 0, LCD_Width, LCD_Height, color);
+  fill_rect(0, 0, _width, _height, color);
 }
 
 /*
@@ -422,14 +469,18 @@ void draw_text(uint16_t x, uint16_t y, char* str, uint16_t color, uint8_t size) 
 
   unsigned char i;
   for (i = 0; i < (unsigned) strlen(str); ++i) {
-    draw_char(x + i*size*TEXT_WIDTH + letter_spacing, y, str[i], color, size);
+    draw_char(x + i*size*CHAR_WIDTH + letter_spacing, y, str[i], color, size);
   }
+}
+
+uint16_t text_width(int num_chars) {
+  return CHAR_WIDTH * num_chars + (5 * (num_chars - 1));
 }
 
 /*
   Draw 32x32 icon at (x, y) specified by the icon bitmap 'icon'
 */
-void draw_icon(uint16_t x, uint16_t y, uint8_t icon[32][4], uint16_t color, uint8_t size) {
+void draw_icon(uint16_t x, uint16_t y, const uint8_t icon[32][4], uint16_t color, uint8_t size) {
   uint16_t i, j, k;
   for (i = 0; i < 32; ++i) {
     // Create 32-bit line

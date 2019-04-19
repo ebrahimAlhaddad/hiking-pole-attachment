@@ -6,6 +6,9 @@
 #define LCD_Width  240
 #define LCD_Height 320
 
+#define CHAR_WIDTH 12
+#define CHAR_HEIGHT 16
+
 #define RST_PIN PB0 // Pin 14
 #define DC_PIN  PB1 // Pin 15
 #define CS_PIN  PB2 // Pin 16
@@ -70,16 +73,18 @@
 #define LCD_GREENYELLOW 0xAFE5  // 173, 255,  41
 #define LCD_PINK        0xFC18  // 255, 130, 198
 
-#define TEXT_WIDTH 12
-#define TEXT_HEIGHT 16
+uint16_t _width, _height;
 
 void lcd_init(void);
 void lcd_reset(void);
+uint16_t lcd_width(void);
+uint16_t lcd_height(void);
 void lcd_write_byte(uint8_t byte);
 void lcd_reg_write8(uint8_t addr, uint8_t data);
 void lcd_reg_write16(uint8_t addr, uint16_t data);
 void lcd_reg_write32(uint8_t addr, uint32_t data);
 void lcd_set_addr_window(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+void lcd_set_rotation(uint8_t rotation);
 
 // GFX
 void fill(uint16_t color);
@@ -96,8 +101,9 @@ void fill_circle_helper(int16_t x0, int16_t y0, int16_t r, uint8_t corners, uint
 
 void draw_char(uint16_t x0, uint16_t y0, char c, uint16_t color, uint8_t size);
 void draw_text(uint16_t x, uint16_t y, char* str, uint16_t color, uint8_t size);
+uint16_t text_width(int num_chars);
 
-void draw_icon(uint16_t x, uint16_t y, uint8_t icon[32][4], uint16_t color, uint8_t size);
+void draw_icon(uint16_t x, uint16_t y, const uint8_t icon[32][4], uint16_t color, uint8_t size);
 void draw_exclaim(uint16_t x, uint16_t y, uint16_t color, uint8_t size);
 void draw_heart(uint16_t x, uint16_t y, uint16_t color, uint8_t size);
 #endif
