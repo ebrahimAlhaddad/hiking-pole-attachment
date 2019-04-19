@@ -1,3 +1,6 @@
+#ifndef _ICONBITMAP_H_INCLUDED
+#define _ICONBITMAP_H_INCLUDED
+
 /*
  32x32 Bitmap of '!'
 */
@@ -73,3 +76,5 @@ const uint8_t heart_icon[32][4] = {
   { 0x00, 0x00, 0x00, 0x00 },
   { 0x00, 0x00, 0x00, 0x00 }
 };
+
+#endif

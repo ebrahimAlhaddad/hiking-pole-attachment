@@ -31,8 +31,3 @@ void sprintln(char* str) {
   send_tx('\r');
   send_tx('\n');
 }
-
-void sprintln() {
-  send_tx('\r');
-  send_tx('\n');
-}
