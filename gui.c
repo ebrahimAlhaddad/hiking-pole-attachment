@@ -2,6 +2,7 @@
 
 #include "gui.h"
 #include "tft_lcd.h"
+#include "gps.h"
 
 void gui_display_home(void) {
   fill(LCD_BLACK);
@@ -37,5 +38,11 @@ void gui_display_home(void) {
 void gui_display_SOS(void) {
   fill(LCD_BLACK);
 
-  draw_text(lcd_width() / 2, lcd_height() / 2, "SOS", LCD_RED, 3);
+  draw_text(80, 90, "SOS", LCD_RED, 4);
+}
+
+void gui_display_GPS(void){
+	fill(LCD_RED);
+	get_data();
+	draw_text(130, 20, "GPS", LCD_WHITE, 2);
 }
