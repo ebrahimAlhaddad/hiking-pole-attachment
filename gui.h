@@ -5,4 +5,11 @@
 
 void gui_display_home(void);
 
+void gui_display_GPS(void);
+
+void gui_display_SOS(void);
+
+void gui_display_COMPASS(void);
+
+void gui_display_PULSE(void);
 #endif
