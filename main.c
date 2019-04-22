@@ -36,9 +36,9 @@ int main(void) {
 		if (touch_pressed()) {
 			point_t touch = touch_get_point(0);
 			flag = 1; 
-			char str[10];
-			sprintf(str, "Touch - (%d, %d)", touch.x, touch.y);
-			sprintln(str);
+			//char str[10];
+			//sprintf(str, "Touch - (%d, %d)", touch.x, touch.y);
+			//sprintln(str);
 
 			// TODO Points must match rotation
 			if (touch.x >= 150 && touch.x <= 170) {
@@ -53,7 +53,18 @@ int main(void) {
 					flag = 2; 
 				}
 			}
-
+			else if (touch.x >=0 && touch.x <= 70) {
+				if (touch.y >= 150 && touch.y <= 170) {
+					gui_display_COMPASS();
+					flag = 2; 
+				}
+			}
+			else if (touch.x >=80 && touch.x <= 140) {
+				if (touch.y >= 180 && touch.y <= 300) {
+					gui_display_PULSE();
+					flag = 2; 
+				}
+			}
 		}
 	}
 	if(flag == 2)
@@ -62,9 +73,7 @@ int main(void) {
 		if (touch_pressed()) {
 			point_t touch = touch_get_point(0);
 			flag = 1; 
-			char str[10];
-			sprintf(str, "Touch - (%d, %d)", touch.x, touch.y);
-			sprintln(str);
+			
 
 			// TODO Points must match rotation
 			if (touch.x >= 0 ) {
