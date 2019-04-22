@@ -2,29 +2,15 @@
 #include <util/delay.h>
 #include <stdio.h>
 
+#include "serial.h"
+#include "gps.h"
+#include "tft_lcd.h"
+
 #define FOSC 7372800 
 #define BAUD 9600
 #define UBRR (FOSC/16/BAUD-1) //Value for UBBR0
 
-void serial_init ( unsigned short ubrr ) {
-  UBRR0 = ubrr ; // Set baud rate
-  UCSR0B |= (1 << TXEN0); // Turn on transmitter
-  UCSR0B |= (1 << RXEN0); // Turn on receiver
-  UCSR0C = (3 << UCSZ00); // Set for async . operation , no parity ,
-  // one stop bit , 8 data bits
-}
 
-char receive_rx(){
-  // Wait for receive complete flag to go high
-  while (!( UCSR0A & (1 << RXC0 )));
-  return UDR0;
-}
- 
-void send_tx(char c){
-  // Wait for transmitter data register empty
-  while ((UCSR0A & (1 << UDRE0)) == 0);
-  UDR0 = c;
-}
 void output_string(char *str)
 {
 	while(*str != 0x00)
@@ -42,15 +28,14 @@ void output_number(int x){
 
 
 
-void data(){
+void get_data(){
+	// draw_text(120, 0, "GPS", LCD_WHITE, 2);
 	int flag; 
 	int index; 
 	char buff[44]; // size of information needed
 	int done = 0; 
 	while(done == 0){
 		_delay_ms(500);
-		output_string(" -- ");
-		output_string("\r\n");
 		flag = 0; 
 		index = 0; 
 		if(flag ==0)
@@ -111,8 +96,10 @@ void data(){
 					int j = n + 1; 
 					if (buff[j] == '0')
 					{
-						output_string(" NOT FIXED ");
+						//output_string(" NOT FIXED ");
+						//draw_text(0, 0, ".", LCD_WHITE, 1); // indicate not fixed 
 						flag = 0; 
+						done = 0; 
 					}
 					if(buff[j] == '1')
 					{
@@ -134,13 +121,12 @@ void data(){
 				time[idx] = buff[i];
 				idx++;
 			}
-			//output_string(" TIME: ");
-			//output_string(time);
-			char North_South = buff[28];
+			char North_South[1];
+			North_South[0] = buff[28];
 			char East_West = buff[41];
 			
 			int minutes = (time[2] - '0') * 10 + (time[3] - '0');
-			int seconds = (time[4] - '0') * 10 + (time[5] - '0');
+			//int seconds = (time[4] - '0') * 10 + (time[5] - '0');
 			int UTChours = (time[0] - '0') * 10 + (time[1] - '0');
 			if(UTChours<7)
 			{
@@ -148,74 +134,49 @@ void data(){
 			}
 			int PST= UTChours - 7;
 			
+			char mins [2];
+			char data [20];
 			
+			sprintf(mins, "%d", minutes);
+			sprintf(data, "%d", PST);
 			
-			output_string("\r\n");
-			output_string(" CURRENT TIME: ");
-			output_number(PST);
-			output_string(":");
-			output_number(minutes);
+			strcat(data, ":");
+			strcat(data, mins);
+			
 			if(PST < 12){
-				output_string(" AM ");
+				strcat(data, "AM");
 			}
 			else {
-				output_string(" PM ");
+				strcat(data, "PM");
 			}
+
+			// output to the LCD
+			draw_text(120, 70, data, LCD_WHITE, 1);
 			
-			output_string("\r\n");
-			
-			//$GPGGA,172759.000,3401.2424,N,11817.3361,W,1
-			
-			char latitude[10];
+			char latitude[14];
 			int m = 0;	
-			for (i = 18; i<27; i++){
+			for (i = 18; i<29; i++){
 				latitude[m] = buff[i];
 				m++;
 			}
 			
+			draw_text(100, 120, latitude, LCD_WHITE, 1);
 
-			char longitude[10];
+			char longitude[15];
 			m = 0;	
-			for (i = 30; i<39; i++){
+			for (i = 30; i<43; i++){
 				longitude[m] = buff[i];
 				m++;
 			}
-			
-			
-			output_string(" LATITUDE: " );
-			output_string(latitude);
-			output_string(" ");
-			send_tx(North_South);
-			output_string("\r\n");
-			output_string(" LONGITUDE: ");
-			output_string(longitude);
-			output_string(" ");
-			send_tx(East_West);
-			output_string("\r\n");
+			draw_text(90, 170, longitude, LCD_WHITE, 1);
 
 			flag = 5; 
 			
 		}
 		if (flag == 5)
 		{
-			output_string(" -- ");
 			done = 1;
 		}
 	}
 }
 
-
-void check(){
-	while (1) 
-	{
-		char input = receive_rx();
-		send_tx(input);
-	}  
-}
-
-void main(void)
-{
-	serial_init(UBRR);
-	data();
-	//check();
-}
