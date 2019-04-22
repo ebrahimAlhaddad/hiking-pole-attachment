@@ -6,6 +6,7 @@
 #include "tft_lcd.h"
 #include "touch.h"
 #include "gui.h"
+#include "gps.h"
 
 int main(void) {
   serial_init();
@@ -23,25 +24,32 @@ int main(void) {
     //   t = 'A';
     // }
     // draw_exclaim(100, 100, LCD_RED, 1);
-
+	int flag = 0; 
     read_touch_data();
     if (touch_pressed()) {
-      point_t touch = touch_get_point(0);
+		point_t touch = touch_get_point(0);
+		flag = 1; 
+		char str[10];
+		sprintf(str, "Touch - (%d, %d)", touch.x, touch.y);
+		sprintln(str);
 
-      char str[10];
-      sprintf(str, "Touch - (%d, %d)", touch.x, touch.y);
-      sprintln(str);
-
-      // TODO Points must match rotation
-      if (touch.x >= 150 && touch.x <= 170) {
-        if (touch.y >= 150 && touch.y <= 170) {
-          gui_display_SOS();
-        }
-      }
+		// TODO Points must match rotation
+		if (touch.x >= 150 && touch.x <= 170) {
+			if (touch.y >= 150 && touch.y <= 170) {
+				gui_display_SOS();
+				
+			}
+		}
+		else if (touch.x >= 100 && touch.x <= 140) {
+			if (touch.y >= 100 && touch.y <= 140) {
+				gui_display_GPS();
+			}
+		}
 
     }
     _delay_ms(50);
   }
+  
 }
 
 // sprintln("Hello World");
