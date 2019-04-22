@@ -5,9 +5,9 @@
 #include "serial.h"
 
 /***************************************************************************
- CONSTRUCTOR
+FUNCTIONS
  ***************************************************************************/
-bool Adafruit_LSM303::begin(){
+bool begin(){
 	// Enable the accelerometer
 	compass_accel_reg_write8(LSM303_REGISTER_ACCEL_CTRL_REG1_A, 0x27);
 	  
@@ -17,11 +17,8 @@ bool Adafruit_LSM303::begin(){
 	return true;
 }
 
-/***************************************************************************
- PUBLIC FUNCTIONS
- ***************************************************************************/
  
- void Adafruit_LSM303::compass_read(){
+void compass_read(){
    // Read the accelerometer
    uint8_t compass_accel_set[];
    compass_accel_reg_write8(LSM303_REGISTER_ACCEL_OUT_X_L_A | 0x80, 1);/////////right?
@@ -42,9 +39,9 @@ bool Adafruit_LSM303::begin(){
   accelData.z = (int16_t)((zhi << 8) | zlo);
   
   // Read the magnetometer
-   uint8_t compass_mag_set[];
-   compass_mag_reg_write8(LSM303_REGISTER_MAG_OUT_X_H_M, 1);////////what to write
-   compass_mag_set[] = compass_mag_reg_read8(LSM303_ADDRESS_MAGL, 6);
+  uint8_t compass_mag_set[];
+  compass_mag_reg_write8(LSM303_REGISTER_MAG_OUT_X_H_M, 1);////////what to write
+  compass_mag_set[] = compass_mag_reg_read8(LSM303_ADDRESS_MAGL, 6);
    
    // Wait around until enough data is available
   while (sizeof(compass_mag_set) < 6);
@@ -66,29 +63,22 @@ bool Adafruit_LSM303::begin(){
  }
  
  
- 
- 
- 
 
-
-/***************************************************************************
- PRIVATE FUNCTIONS
- ***************************************************************************/
- void Adafruit_LSM303::compass_accel_reg_write8(uint8_t addr, uint8_t data){
+void compass_accel_reg_write8(uint8_t addr, uint8_t data){
  	i2c_io(LSM303_ADDRESS_ACCEL, &addr, 1, &data, 1, NULL, 0);
  }
  
- void Adafruit_LSM303::compass_mag_reg_write8(uint8_t addr, uint8_t data){
+void compass_mag_reg_write8(uint8_t addr, uint8_t data){
  	i2c_io(LSM303_ADDRESS_MAG, &addr, 1, &data, 1, NULL, 0);
  }
  
-uint8_t Adafruit_LSM303::compass_accel_reg_read8(uint8_t addr, int rn) {
+uint8_t compass_accel_reg_read8(uint8_t addr, int rn) {
 	uint8_t read_byte;
 	i2c_io(LSM303_ADDRESS_ACCE, &addr, 1, NULL, 0, &read_byte, rn);
 	return read_byte;
 }
 
-uint8_t Adafruit_LSM303::compass_mag_reg_read8(uint8_t addr, int rn) {
+uint8_t compass_mag_reg_read8(uint8_t addr, int rn) {
 	uint8_t read_byte;
 	i2c_io(LSM303_ADDRESS_MAG, &addr, 1, NULL, 0, &read_byte, rn);
 	return read_byte;
