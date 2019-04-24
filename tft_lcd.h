@@ -104,6 +104,8 @@ void draw_text(uint16_t x, uint16_t y, char* str, uint16_t color, uint8_t size);
 uint16_t text_width(int num_chars);
 
 void draw_icon(uint16_t x, uint16_t y, const uint8_t icon[32][4], uint16_t color, uint8_t size);
-void draw_exclaim(uint16_t x, uint16_t y, uint16_t color, uint8_t size);
+void draw_gps(uint16_t x, uint16_t y, uint16_t color, uint8_t size);
 void draw_heart(uint16_t x, uint16_t y, uint16_t color, uint8_t size);
+void draw_compass(uint16_t x, uint16_t y, uint16_t color, uint8_t size);
+
 #endif

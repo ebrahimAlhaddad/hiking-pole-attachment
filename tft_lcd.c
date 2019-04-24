@@ -497,10 +497,14 @@ void draw_icon(uint16_t x, uint16_t y, const uint8_t icon[32][4], uint16_t color
   }
 }
 
-void draw_exclaim(uint16_t x, uint16_t y, uint16_t color, uint8_t size) {
-  draw_icon(x, y, exclaim_icon, color, size);
+void draw_gps(uint16_t x, uint16_t y, uint16_t color, uint8_t size) {
+  draw_icon(x, y, gps_icon, color, size);
 }
 
 void draw_heart(uint16_t x, uint16_t y, uint16_t color, uint8_t size) {
   draw_icon(x, y, heart_icon, color, size);
+}
+
+void draw_compass(uint16_t x, uint16_t y, uint16_t color, uint8_t size) {
+  draw_icon(x, y, compass_icon, color, size);
 }

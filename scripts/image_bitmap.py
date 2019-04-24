@@ -7,8 +7,7 @@ image = img.imread(sys.argv[1])
 bitmap = [['0' for i in range(32)] for j in range(32)]
 for x in range(32):
     for y in range(32):
-        # print(image[x][y])
-        if(image[x][y][3] == 1):
+        if(image[x][y][3] > 0):
             bitmap[x][y] = '1'
 
 # print(bitmap)

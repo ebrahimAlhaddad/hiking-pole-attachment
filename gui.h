@@ -4,12 +4,9 @@
 #define BTN_RADIUS 30
 
 void gui_display_home(void);
+void gui_display_gps(void);
+void gui_display_sos(void);
+void gui_display_compass(void);
+void gui_display_pulse(void);
 
-void gui_display_GPS(void);
-
-void gui_display_SOS(void);
-
-void gui_display_COMPASS(void);
-
-void gui_display_PULSE(void);
 #endif
