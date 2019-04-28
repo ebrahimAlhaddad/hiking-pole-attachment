@@ -8,7 +8,7 @@
 #include <util/delay.h>
 
 #define ADC_PIN1			1
-#define ADC_THRESH	368
+#define ADC_THRESH	370
 //bpm
 
 

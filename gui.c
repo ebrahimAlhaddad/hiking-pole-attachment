@@ -68,7 +68,11 @@ void gui_display_pulse(void)
   fill(LCD_BLACK);
   draw_text(lcd_width() / 2 - ((CHAR_WIDTH * 5) / 2) * 2, 30, "PULSE", LCD_DARKGREY, 2);
   uint16_t test = calc_BPM();
-  char temp_bpm[5];
-  sprintf(temp_bpm," %d ",test);
-  draw_text(lcd_width() / 2 - (CHAR_WIDTH * 2) * 3, 130, temp_bpm, LCD_WHITE, 3);
+  if(test < 35 || test > 230){
+      draw_text(lcd_width() / 2 - ((CHAR_WIDTH * 5) / 2) * 2, 130, "BAD DATA", LCD_RED, 2);
+  } else {
+    char temp_bpm[5];
+    sprintf(temp_bpm," %d ",test);
+    draw_text(lcd_width() / 2 - (CHAR_WIDTH * 2) * 3, 130, temp_bpm, LCD_WHITE, 3);
+  }
 }

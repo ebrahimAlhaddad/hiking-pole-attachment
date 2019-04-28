@@ -58,12 +58,15 @@ void pulse_init(void){
 uint16_t calc_BPM(void){
     ADCSRA |= _BV(ADEN);
   uint16_t counter = 0;
+  //uint8_t no_data = 1;
   while(counter < 2000){
 
     uint16_t Signal = adc_read(ADC_PIN1);
   sampleCounter += 2;               
   uint16_t N = sampleCounter - lastBeatTime; 
-
+  //if(Signal > 390){
+    //o_data = 0;
+  //}
     //updates Trough when the period since last beat is larger than (5/3)IBI
     if(Signal < thresh && N > (IBI/5)*3){
 
@@ -159,6 +162,9 @@ uint16_t calc_BPM(void){
 
 	 ADCSRA &= ~_BV(ADEN);
 
-
-  return BPM;
+  //if(no_data == 1){
+    //return 10;
+  //} else {
+    return BPM;
+  //}
 }
