@@ -40,23 +40,23 @@ void pulse_init(void){
 	/* Enable the ADC */
 	ADCSRA |= _BV(ADEN);
 	// Set the Timer Mode to CTC
-    TCCR0A |= (1 << WGM01);
+    //TCCR0A |= (1 << WGM01);
 
     // Set the value that you want to count to
-    OCR0A = 0x13; // OCRn = ((clock/prescalar) * time in sec) - 1 => ((9830400/1024) * 0.002) - 1 = 19
+    //OCR0A = 0x13; // OCRn = ((clock/prescalar) * time in sec) - 1 => ((9830400/1024) * 0.002) - 1 = 19
 
  	//Set the ISR COMPA vect
-    TIMSK0 |= (1 << OCIE0A);   
+    //TIMSK0 |= (1 << OCIE0A);   
 
 
     //set prescaler to 1024 and start the timer
-    TCCR0B |= (1 << CS02);
-   	TCCR0B |= (1 << CS00);
+    //TCCR0B |= (1 << CS02);
+   	//TCCR0B |= (1 << CS00);
    	
 }
 
 uint16_t calc_BPM(void){
-
+    ADCSRA |= _BV(ADEN);
   uint16_t counter = 0;
   while(counter < 2000){
 
@@ -157,7 +157,8 @@ uint16_t calc_BPM(void){
     output_number(Signal);
   }
 
-	
+	 ADCSRA &= ~_BV(ADEN);
+
 
   return BPM;
 }

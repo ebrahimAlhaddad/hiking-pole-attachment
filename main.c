@@ -21,7 +21,7 @@ int main(void) {
   spi_init();
   i2c_init();
   lcd_init();
-  pulse_init();
+  //pulse_init();
   int state = 0;
 
   while (1) {
@@ -41,7 +41,7 @@ int main(void) {
   		read_touch_data();
   		if (touch_pressed()) {
   			point_t touch = touch_get_point(0);
-  			state = HOME;
+  			//state = HOME;
 
   			// char str[10];
   			// sprintf(str, "Touch - (%d, %d)", touch.x, touch.y);
