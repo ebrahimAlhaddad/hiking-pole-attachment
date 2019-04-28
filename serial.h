@@ -16,6 +16,6 @@ void send_tx(char c);
 
 void sprint(char* str);
 void sprintln(char* str);
-
+void output_number(uint16_t x);
 
 #endif

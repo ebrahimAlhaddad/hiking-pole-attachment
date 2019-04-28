@@ -15,12 +15,6 @@ void output_string(char *str)
 	}
 }
 
-void output_number(int x){
-	char temp[4];
-	sprintf(temp, "%d", x);
-	output_string(temp);
-}
-
 void gps_get_data(){
 	// draw_text(120, 0, "GPS", LCD_WHITE, 2);
 	int flag;

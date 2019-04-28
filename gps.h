@@ -7,7 +7,7 @@
 #include <string.h>
 
 void output_string(char*);
-void output_number(int);
+//void output_number(int);
 void gps_get_data(void);
 
 #endif

@@ -31,3 +31,9 @@ void sprintln(char* str) {
   send_tx('\r');
   send_tx('\n');
 }
+
+void output_number(uint16_t x){
+  char temp[5];
+  sprintf(temp," %d ",x);
+  output_string(temp);
+}

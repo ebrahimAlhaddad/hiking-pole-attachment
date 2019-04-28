@@ -7,19 +7,21 @@
 #include "touch.h"
 #include "gui.h"
 #include "gps.h"
-#include "compass.h"
-
+//#include "compass.h"
+#include "pulse.h"
 // STATE CONSTANTS
 #define INITIAL 0
 #define HOME    1
 #define OTHER   2  // In a screen other than Home
+//volatile uint16_t global_bpm;
+
 
 int main(void) {
   serial_init();
   spi_init();
   i2c_init();
   lcd_init();
-
+  pulse_init();
   int state = 0;
 
   while (1) {
@@ -88,6 +90,7 @@ int main(void) {
   				if (touch.y >= 0) {
   					gui_display_home();
   					state = HOME;
+            
   				}
   			}
 
@@ -98,5 +101,9 @@ int main(void) {
 
 }
 
+
+// ISR (TIMER0_COMPA_vect){
+//   global_bpm = calc_BPM();
+// }
 // sprintln("Hello World");
 // _delay_ms(1000);

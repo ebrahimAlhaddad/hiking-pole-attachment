@@ -3,7 +3,7 @@
 #include "gui.h"
 #include "tft_lcd.h"
 #include "gps.h"
-
+#include "pulse.h"
 void gui_display_home(void) {
   fill(LCD_BLACK);
 
@@ -65,6 +65,10 @@ void gui_display_compass(void)
 
 void gui_display_pulse(void)
 {
-	fill(LCD_BLACK);
-	draw_text(lcd_width() / 2 - ((CHAR_WIDTH * 5) / 2) * 2, 30, "PULSE", LCD_DARKGREY, 2);
+  fill(LCD_BLACK);
+  draw_text(lcd_width() / 2 - ((CHAR_WIDTH * 5) / 2) * 2, 30, "PULSE", LCD_DARKGREY, 2);
+  uint16_t test = calc_BPM();
+  char temp_bpm[5];
+  sprintf(temp_bpm," %d ",test);
+  draw_text(lcd_width() / 2 - (CHAR_WIDTH * 2) * 3, 130, temp_bpm, LCD_WHITE, 3);
 }
