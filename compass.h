@@ -22,8 +22,8 @@
 #endif
 #include "Wire.h"*/
 
-#define LSM303_ADDRESS_ACCEL           0x64 // (0x32 >> 1)
-#define LSM303_ADDRESS_MAG             0x78 // (0x3C >> 1)
+#define LSM303_ADDRESS_ACCEL           0x32 // 00110010
+#define LSM303_ADDRESS_MAG             0x3C
 #define LSM303_ID                     (0b11010100)
 
 #define LSM303_REGISTER_ACCEL_CTRL_REG1_A 				 0x20   // 00000111   rw
@@ -82,27 +82,25 @@ typedef enum {
 	LSM303_MAGGAIN_4_7                        = 0xA0,  // +/- 4.7
   LSM303_MAGGAIN_5_6                        = 0xC0,  // +/- 5.6
 	LSM303_MAGGAIN_8_1                        = 0xE0   // +/- 8.1
-} lsm303MagGain;
+} mag_gain_t;
 
-typedef struct lsm303AccelData_s {
-  float x;
-  float y;
-  float z;
-} lsm303AccelData;
+typedef struct coord_data {
+  int16_t x;
+  int16_t y;
+  int16_t z;
+} coord_data_t;
 
-typedef struct lsm303MagData_s {
-  float x;
-  float y;
-  float z;
-	float orientation;
-} lsm303MagData;
+void compass_init(void);
+void compass_read_accel(void);
+void compass_read_mag(void);
+coord_data_t compass_get_accel(void);
+coord_data_t compass_get_mag(void);
 
-bool begin(void);
-void compass_read(void);
-//void setMagGain(lsm303MagGain gain);
-
-lsm303AccelData accelData;    // Last read accelerometer data will be available here
-lsm303MagData magData;        // Last read magnetometer data will be available here
+coord_data_t raw_accel;
+coord_data_t raw_mag;
+mag_gain_t mag_gain;
+uint16_t gauss_xy;
+uint16_t gauss_z;
 
 void compass_accel_reg_write8(uint8_t addr, uint8_t data);
 void compass_mag_reg_write8(uint8_t addr, uint8_t data);

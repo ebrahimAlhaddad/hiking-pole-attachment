@@ -12,7 +12,8 @@ void spi_init() {
   DDRB |= (1 << SS_PIN);
 
   // SPI: Master Mode, MSB first, SCK leading rising edge
-  SPCR |= (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+  SPCR |= (1 << SPE) | (1 << MSTR) | (0 << SPR1) | (0 << SPR0);
+  SPSR = (1 << SPI2X);
 }
 
 void spi_write(uint8_t data) {
