@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = main.o serial.o spi.o tft_lcd.o i2c.o touch.o gui.o gps.o pulse.o
+OBJECTS    = main.o serial.o spi.o tft_lcd.o i2c.o touch.o gui.o gps.o pulse.o compass.o
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 
 # Fuse Low Byte = 0xe0   Fuse High Byte = 0xd9   Fuse Extended Byte = 0xff
@@ -28,7 +28,7 @@ COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
 # symbolic targets:
 all:	main.hex
 
-main.o: main.c serial.h spi.h tft_lcd.h pulse.h
+main.o: main.c serial.h spi.h tft_lcd.h pulse.h compass.h
 serial.o: serial.c serial.h
 spi.o: spi.c spi.h
 i2c.o: i2c.c i2c.h
@@ -36,7 +36,7 @@ tft_lcd.o: tft_lcd.c tft_lcd.h
 touch.o: touch.c touch.h
 gui.o: gui.c gui.h pulse.h
 gps.o: gps.c gps.h
-#compass.o: compass.c compass.h
+compass.o: compass.c compass.h
 pulse.o: pulse.c pulse.h
 
 .c.o:

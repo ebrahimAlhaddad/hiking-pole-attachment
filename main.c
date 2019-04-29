@@ -7,7 +7,7 @@
 #include "touch.h"
 #include "gui.h"
 #include "gps.h"
-//#include "compass.h"
+#include "compass.h"
 #include "pulse.h"
 // STATE CONSTANTS
 #define INITIAL 0
